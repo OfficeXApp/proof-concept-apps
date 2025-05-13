@@ -74,7 +74,7 @@ const locale: typeof zhCN = {
     clipboard: {
         authentication: {
             title: 'Permission Denied',
-            content: 'Please allow Univer to access your clipboard.',
+            content: 'Please allow OfficeX to access your clipboard.',
         },
     },
     textEditor: {
