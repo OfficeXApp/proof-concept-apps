@@ -82,8 +82,13 @@ export const mockUser = {
     canBindAnonymous: false,
 };
 
+interface IFileData {
+    file_id?: string;
+    file_name?: string;
+}
+
 // eslint-disable-next-line max-lines-per-function
-function createNewInstance() {
+function createNewInstance(fileData?: IFileData) {
     // univer
     const univer = new Univer({
         // theme: greenTheme,
@@ -152,9 +157,17 @@ function createNewInstance() {
     const userManagerService = injector.get(UserManagerService);
     userManagerService.setCurrentUser(mockUser);
 
+    const _workbookData = BLANK_WORKBOOK_DATA_DEMO;
+    if (fileData?.file_id) {
+        _workbookData.id = fileData.file_id;
+    }
+    if (fileData?.file_name) {
+        _workbookData.name = fileData.file_name?.replace('.officex-spreadsheet.json', '');
+    }
+
     // create univer sheet instance
     if (!IS_E2E) {
-        univer.createUnit(UniverInstanceType.UNIVER_SHEET, BLANK_WORKBOOK_DATA_DEMO);
+        univer.createUnit(UniverInstanceType.UNIVER_SHEET, _workbookData);
     }
 
     setTimeout(() => {
@@ -201,11 +214,16 @@ const connectPenpal = async () => {
 
     const remote = await connection.promise;
     window.penpalParent = remote;
+
+    // @ts-ignore
+    const fileData = await remote.getFileData();
+    console.log('FILE_DATA  = ', fileData);
+
+    createNewInstance(fileData);
+    window.createNewInstance = createNewInstance;
 };
 
-createNewInstance();
 connectPenpal();
-window.createNewInstance = createNewInstance;
 
 declare global {
     // eslint-disable-next-line ts/naming-convention

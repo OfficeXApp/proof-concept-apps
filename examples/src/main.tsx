@@ -53,7 +53,8 @@ function Examples() {
         <section
             className="univer-flex univer-h-full univer-flex-col univer-items-center univer-justify-center univer-gap-6"
         >
-            <header className="univer-flex univer-items-center">
+            <p>Loading...</p>
+            {/* <header className="univer-flex univer-items-center">
                 <h1 style={{ fontFamily: 'sans-serif' }}>OfficeX</h1>
 
             </header>
@@ -73,7 +74,7 @@ function Examples() {
                         <span>{demo.title}</span>
                     </a>
                 ))}
-            </section>
+            </section> */}
         </section>
     );
 }
