@@ -21,7 +21,7 @@ import { Disposable, EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, FOCUSING_UNIVER_E
 import { CopyCommand, CutCommand, PasteCommand } from '../services/clipboard/clipboard.command';
 import { KeyCode, MetaKeys } from '../services/shortcut/keycode';
 import { IShortcutService } from '../services/shortcut/shortcut.service';
-import { SaveFileCommand, ShareCommand } from './menus/menus';
+import { DownloadFileCommand, SaveFileCommand, ShareCommand } from './menus/menus';
 
 // Not that the clipboard shortcut items would only be invoked when the browser fully supports clipboard API.
 // If not, the corresponding shortcut would not be triggered and we will perform clipboard operations
@@ -126,5 +126,6 @@ export class SharedController extends Disposable {
     private _registerSaveShare(): void {
         this.disposeWithMe(this._commandService.registerMultipleCommand(SaveFileCommand));
         this.disposeWithMe(this._commandService.registerMultipleCommand(ShareCommand));
+        this.disposeWithMe(this._commandService.registerMultipleCommand(DownloadFileCommand));
     }
 }

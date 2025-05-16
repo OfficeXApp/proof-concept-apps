@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { IAccessor } from '@univerjs/core';
+import type { IAccessor, Workbook } from '@univerjs/core';
 import type { IMenuButtonItem } from '../../services/menu/menu';
-import { CommandType, EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService, IUndoRedoService, RedoCommand, UndoCommand } from '@univerjs/core';
+import { CommandType, EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService, IResourceLoaderService, IUndoRedoService, IUniverInstanceService, RedoCommand, UndoCommand, UniverInstanceType } from '@univerjs/core';
 
 import { combineLatest, merge, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MenuItemType } from '../../services/menu/menu';
+import { ILocalFileService } from '../../services/local-file/local-file.service';
 
 const undoRedoDisableFactory$ = (accessor: IAccessor, isUndo: boolean) => {
     const undoRedoService = accessor.get(IUndoRedoService);
@@ -74,6 +75,48 @@ export const ShareCommand = {
     },
 };
 
+export const DownloadFileCommand = {
+    id: 'download-file',
+    type: CommandType.COMMAND,
+    handler: async (accessor: IAccessor) => {
+        console.log(`Download file clicked`)
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const resourceLoaderService = accessor.get(IResourceLoaderService);
+        // const localFileService = accessor.get(ILocalFileService);
+
+        // Get current workbook/sheet
+        const workbook = univerInstanceService.getCurrentUnitForType<Workbook>(UniverInstanceType.UNIVER_SHEET);
+
+        console.log(`workbook`, workbook);
+
+        if (!workbook) {
+            return false;
+        }
+
+        // Save snapshot
+        const snapshot = resourceLoaderService.saveUnit(workbook.getUnitId());
+
+        console.log(`snapshot`, snapshot);
+
+        if (!snapshot) {
+            return false;
+        }
+
+        // Download the file
+        const fileName = `${new Date().toLocaleString()} snapshot.json`;
+        const content = JSON.stringify(snapshot, null, 2);
+
+        console.log(`content`, content);
+
+        // localFileService.downloadFile(new Blob([content]), fileName);
+
+        // @ts-ignore
+        window.penpalParent?.downloadFile(content);
+
+        return true;
+    },
+};
+
 export const SaveFileMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
     id: 'save-file',
     type: MenuItemType.BUTTON,
@@ -88,4 +131,13 @@ export const ShareMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
     title: 'Share',
     tooltip: 'Share',
     commandId: ShareCommand.id,
+});
+
+
+export const DownloadFileMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
+    id: 'download-file',
+    type: MenuItemType.BUTTON,
+    title: 'Download',
+    tooltip: 'Download File',
+    commandId: DownloadFileCommand.id,
 });
