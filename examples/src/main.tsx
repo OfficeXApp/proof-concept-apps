@@ -17,14 +17,15 @@
 import { render } from '@univerjs/design';
 import { defaultTheme } from '@univerjs/themes';
 import { ThemeSwitcherService } from '@univerjs/ui';
-import pkg from '../../package.json';
 
 import './global.css';
+
+export const LOCAL_DEV = true;
+export const IFRAME_PARENT_URL = LOCAL_DEV ? 'http://localhost:5173' : 'https://drive.officex.app';
 
 // package info
 // eslint-disable-next-line node/prefer-global/process
 if (process.env.NODE_ENV === 'production') {
-    // eslint-disable-next-line no-console
     console.table({
         // eslint-disable-next-line node/prefer-global/process
         NODE_ENV: process.env.NODE_ENV,
@@ -46,30 +47,7 @@ function Examples() {
     }, {
         title: '📝 Docs',
         href: './docs/',
-    }
-    // , {
-    //     title: '📽️ Slides',
-    //     href: './slides/',
-    // }, {
-    //     title: '🗂️ Sheets Multi Instance',
-    //     href: './sheets-multi/',
-    // }, {
-    //     title: '🏡 Sheets Multi Units',
-    //     href: './sheets-multi-units/',
-    // }, {
-    //     title: '📄 Sheets Uniscript',
-    //     href: './sheets-uniscript/',
-    // }, {
-    //     title: '📚 Docs Uniscript',
-    //     href: './docs-uniscript/',
-    // }, {
-    //     title: '🌌 Uni Mode',
-    //     href: './uni/',
-    // }, {
-    //     title: '📱 Mobile',
-    //     href: './mobile-s/',
-    // }
-];
+    }];
 
     return (
         <section
@@ -77,7 +55,7 @@ function Examples() {
         >
             <header className="univer-flex univer-items-center">
                 <h1 style={{ fontFamily: 'sans-serif' }}>OfficeX</h1>
-                
+
             </header>
 
             <section className="univer-flex univer-flex-wrap univer-justify-center univer-gap-6">
@@ -101,3 +79,26 @@ function Examples() {
 }
 
 render(<Examples />, document.getElementById('app')!);
+
+// , {
+    //     title: '📽️ Slides',
+    //     href: './slides/',
+    // }, {
+    //     title: '🗂️ Sheets Multi Instance',
+    //     href: './sheets-multi/',
+    // }, {
+    //     title: '🏡 Sheets Multi Units',
+    //     href: './sheets-multi-units/',
+    // }, {
+    //     title: '📄 Sheets Uniscript',
+    //     href: './sheets-uniscript/',
+    // }, {
+    //     title: '📚 Docs Uniscript',
+    //     href: './docs-uniscript/',
+    // }, {
+    //     title: '🌌 Uni Mode',
+    //     href: './uni/',
+    // }, {
+    //     title: '📱 Mobile',
+    //     href: './mobile-s/',
+    // }

@@ -16,7 +16,7 @@
 
 import type { IAccessor } from '@univerjs/core';
 import type { IMenuButtonItem } from '../../services/menu/menu';
-import { EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService, IUndoRedoService, RedoCommand, UndoCommand } from '@univerjs/core';
+import { CommandType, EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService, IUndoRedoService, RedoCommand, UndoCommand } from '@univerjs/core';
 
 import { combineLatest, merge, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -55,3 +55,37 @@ export function RedoMenuItemFactory(accessor: IAccessor): IMenuButtonItem {
         disabled$: undoRedoDisableFactory$(accessor, false),
     };
 }
+
+export const SaveFileCommand = {
+    id: 'save-file',
+    type: CommandType.COMMAND,
+    handler: () => {
+        console.log('Save file clicked');
+        // @ts-ignore
+        window.penpalParent?.logMessage('Save file clicked, propagated in parent');
+    },
+};
+
+export const ShareCommand = {
+    id: 'share',
+    type: CommandType.COMMAND,
+    handler: () => {
+        console.log('Share clicked');
+    },
+};
+
+export const SaveFileMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
+    id: 'save-file',
+    type: MenuItemType.BUTTON,
+    title: 'Save',
+    tooltip: 'Save File',
+    commandId: SaveFileCommand.id,
+});
+
+export const ShareMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
+    id: 'share',
+    type: MenuItemType.BUTTON,
+    title: 'Share',
+    tooltip: 'Share',
+    commandId: ShareCommand.id,
+});

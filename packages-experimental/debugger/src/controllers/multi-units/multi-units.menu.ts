@@ -53,10 +53,10 @@ function SwitchUnitMenuFactory(accessor: IAccessor): IMenuSelectorItem {
 }
 
 export const menuSchema: MenuSchemaType = {
-    // [RibbonStartGroup.OTHERS]: {
-    //     [SwitchUnitOperation.id]: {
-    //         order: 999,
-    //         menuItemFactory: SwitchUnitMenuFactory,
-    //     },
-    // },
+    [RibbonStartGroup.OTHERS]: {
+        // [SwitchUnitOperation.id]: {
+        //     order: 999,
+        //     menuItemFactory: SwitchUnitMenuFactory,
+        // },
+    },
 };

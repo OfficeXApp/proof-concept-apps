@@ -19,12 +19,30 @@ import { RedoCommand, UndoCommand } from '@univerjs/core';
 import { ToggleShortcutPanelOperation } from '../../commands/operations/toggle-shortcut-panel.operation';
 import { RibbonStartGroup } from '../../services/menu/types';
 import { ShortcutPanelMenuItemFactory } from '../shortcut-display/menu';
-import { RedoMenuItemFactory, UndoMenuItemFactory } from './menus';
+import { RedoMenuItemFactory, SaveFileMenuItemFactory, ShareMenuItemFactory, UndoMenuItemFactory } from './menus';
 
 export const menuSchema: MenuSchemaType = {
+    // [RibbonStartGroup.FILE]: {
+    //     'save-file': {
+    //         order: 0,
+    //         menuItemFactory: SaveFileMenuItemFactory,
+    //     },
+    //     'share': {
+    //         order: 1,
+    //         menuItemFactory: ShareMenuItemFactory,
+    //     },
+    // },
     [RibbonStartGroup.HISTORY]: {
-        [UndoCommand.id]: {
+        'save-file': {
             order: 0,
+            menuItemFactory: SaveFileMenuItemFactory,
+        },
+        share: {
+            order: 0,
+            menuItemFactory: ShareMenuItemFactory,
+        },
+        [UndoCommand.id]: {
+            order: 1,
             menuItemFactory: UndoMenuItemFactory,
         },
         [RedoCommand.id]: {

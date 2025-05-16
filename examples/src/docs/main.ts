@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Methods, RemoteProxy } from 'penpal';
 import { LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
 import { FUniver } from '@univerjs/core/facade';
 import { UniverDebuggerPlugin } from '@univerjs/debugger';
@@ -26,10 +27,12 @@ import { UniverDocsThreadCommentUIPlugin } from '@univerjs/docs-thread-comment-u
 import { UniverDocsUIPlugin } from '@univerjs/docs-ui';
 import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
 import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
-import { BLANK_DOCUMENT_DATA_SIMPLE, DEFAULT_DOCUMENT_DATA_SIMPLE } from '@univerjs/mockdata';
+import { BLANK_DOCUMENT_DATA_SIMPLE } from '@univerjs/mockdata';
 import { UniverUIPlugin } from '@univerjs/ui';
-import { enUS, faIR, ruRU, zhCN } from '../locales';
+import { connect, WindowMessenger } from 'penpal';
 
+import { enUS, faIR, ruRU, zhCN } from '../locales';
+import { IFRAME_PARENT_URL } from '../main';
 import '../global.css';
 
 /* eslint-disable node/prefer-global/process */
@@ -54,7 +57,7 @@ univer.registerPlugin(UniverUIPlugin, {
     container: 'app',
     header: true,
     toolbar: true,
-    footer: true
+    footer: true,
 });
 
 univer.registerPlugin(UniverDocsPlugin);
@@ -79,15 +82,39 @@ if (!IS_E2E) {
 
 univer.registerPlugin(UniverDebuggerPlugin, {
     performanceMonitor: {
-        enabled: false
-    }
+        enabled: false,
+    },
 });
+
+const connectPenpal = async () => {
+    const messenger = new WindowMessenger({
+        remoteWindow: window.parent,
+        // Defaults to the current origin.
+        allowedOrigins: [IFRAME_PARENT_URL],
+    });
+
+    const connection = connect({
+        messenger,
+        // Methods the iframe window is exposing to the parent window.
+        methods: {
+            checkstatus(logSanityCheck: string) {
+                console.log(`logSanityCheck: ${logSanityCheck}`);
+                return Date.now();
+            },
+        },
+    });
+
+    const remote = await connection.promise;
+    window.penpalParent = remote;
+};
+connectPenpal();
 
 // use for console test
 declare global {
     // eslint-disable-next-line ts/naming-convention
     interface Window {
         univer?: Univer;
+        penpalParent?: RemoteProxy<Methods>;
     }
 }
 

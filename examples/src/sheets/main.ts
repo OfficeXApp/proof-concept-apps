@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Methods, RemoteProxy } from 'penpal';
 import { LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
 import { FUniver } from '@univerjs/core/facade';
 import { UniverDebuggerPlugin } from '@univerjs/debugger';
@@ -21,7 +22,7 @@ import { UniverDocsPlugin } from '@univerjs/docs';
 import { UniverDocsUIPlugin } from '@univerjs/docs-ui';
 import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
 import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
-import { BLANK_WORKBOOK_DATA_DEMO, DEFAULT_WORKBOOK_DATA_DEMO } from '@univerjs/mockdata';
+import { BLANK_WORKBOOK_DATA_DEMO } from '@univerjs/mockdata';
 import { UniverNetworkPlugin } from '@univerjs/network';
 import { UniverRPCMainThreadPlugin } from '@univerjs/rpc';
 import { UniverSheetsPlugin } from '@univerjs/sheets';
@@ -39,7 +40,9 @@ import { UniverSheetsThreadCommentPlugin } from '@univerjs/sheets-thread-comment
 import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui';
 import { UniverSheetsZenEditorPlugin } from '@univerjs/sheets-zen-editor';
 import { UniverUIPlugin } from '@univerjs/ui';
+import { connect, WindowMessenger } from 'penpal';
 import { enUS, faIR, frFR, ruRU, viVN, zhCN, zhTW } from '../locales';
+import { IFRAME_PARENT_URL } from '../main';
 import { UniverSheetsCustomMenuPlugin } from './custom-menu';
 import ImportCSVButtonPlugin from './custom-plugin/import-csv-button';
 import '@univerjs/sheets/facade';
@@ -178,7 +181,30 @@ function createNewInstance() {
     window.univerAPI = FUniver.newAPI(univer);
 }
 
+const connectPenpal = async () => {
+    const messenger = new WindowMessenger({
+        remoteWindow: window.parent,
+        // Defaults to the current origin.
+        allowedOrigins: [IFRAME_PARENT_URL],
+    });
+
+    const connection = connect({
+        messenger,
+        // Methods the iframe window is exposing to the parent window.
+        methods: {
+            checkstatus(logSanityCheck: string) {
+                console.log(`logSanityCheck: ${logSanityCheck}`);
+                return Date.now();
+            },
+        },
+    });
+
+    const remote = await connection.promise;
+    window.penpalParent = remote;
+};
+
 createNewInstance();
+connectPenpal();
 window.createNewInstance = createNewInstance;
 
 declare global {
@@ -187,5 +213,6 @@ declare global {
         univer?: Univer;
         univerAPI?: ReturnType<typeof FUniver.newAPI>;
         createNewInstance?: typeof createNewInstance;
+        penpalParent?: RemoteProxy<Methods>;
     }
 }
