@@ -83,8 +83,10 @@ export const mockUser = {
 };
 
 interface IFileData {
-    file_id?: string;
-    file_name?: string;
+    file?: any;
+    contents?: {
+        content: any;
+    };
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -157,13 +159,7 @@ function createNewInstance(fileData?: IFileData) {
     const userManagerService = injector.get(UserManagerService);
     userManagerService.setCurrentUser(mockUser);
 
-    const _workbookData = BLANK_WORKBOOK_DATA_DEMO;
-    if (fileData?.file_id) {
-        _workbookData.id = fileData.file_id;
-    }
-    if (fileData?.file_name) {
-        _workbookData.name = fileData.file_name?.replace('.officex-spreadsheet.json', '');
-    }
+    const _workbookData = fileData?.contents?.content ? fileData.contents.content : BLANK_WORKBOOK_DATA_DEMO;
 
     // create univer sheet instance
     if (!IS_E2E) {

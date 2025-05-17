@@ -21,7 +21,6 @@ import { CommandType, EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService,
 import { combineLatest, merge, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MenuItemType } from '../../services/menu/menu';
-import { ILocalFileService } from '../../services/local-file/local-file.service';
 
 const undoRedoDisableFactory$ = (accessor: IAccessor, isUndo: boolean) => {
     const undoRedoService = accessor.get(IUndoRedoService);
@@ -72,6 +71,8 @@ export const ShareCommand = {
     type: CommandType.COMMAND,
     handler: () => {
         console.log('Share clicked');
+        // @ts-ignore
+        window.penpalParent?.shareFile();
     },
 };
 
@@ -79,7 +80,7 @@ export const DownloadFileCommand = {
     id: 'download-file',
     type: CommandType.COMMAND,
     handler: async (accessor: IAccessor) => {
-        console.log(`Download file clicked`)
+        console.log('Download file clicked');
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const resourceLoaderService = accessor.get(IResourceLoaderService);
         // const localFileService = accessor.get(ILocalFileService);
@@ -87,7 +88,7 @@ export const DownloadFileCommand = {
         // Get current workbook/sheet
         const workbook = univerInstanceService.getCurrentUnitForType<Workbook>(UniverInstanceType.UNIVER_SHEET);
 
-        console.log(`workbook`, workbook);
+        console.log('workbook', workbook);
 
         if (!workbook) {
             return false;
@@ -96,7 +97,7 @@ export const DownloadFileCommand = {
         // Save snapshot
         const snapshot = resourceLoaderService.saveUnit(workbook.getUnitId());
 
-        console.log(`snapshot`, snapshot);
+        console.log('snapshot', snapshot);
 
         if (!snapshot) {
             return false;
@@ -106,7 +107,7 @@ export const DownloadFileCommand = {
         const fileName = `${new Date().toLocaleString()} snapshot.json`;
         const content = JSON.stringify(snapshot, null, 2);
 
-        console.log(`content`, content);
+        console.log('content', content);
 
         // localFileService.downloadFile(new Blob([content]), fileName);
 
@@ -132,7 +133,6 @@ export const ShareMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
     tooltip: 'Share',
     commandId: ShareCommand.id,
 });
-
 
 export const DownloadFileMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
     id: 'download-file',
