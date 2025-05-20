@@ -159,7 +159,7 @@ function createNewInstance(fileData?: IFileData) {
     const userManagerService = injector.get(UserManagerService);
     userManagerService.setCurrentUser(mockUser);
 
-    const _workbookData = fileData?.contents?.content ? fileData.contents.content : BLANK_WORKBOOK_DATA_DEMO;
+    const _workbookData = fileData?.contents?.content ? fileData.contents.content : { ...BLANK_WORKBOOK_DATA_DEMO, id: fileData?.file.id, name: fileData?.file?.name?.replace('.officex-spreadsheet', '') };
 
     // create univer sheet instance
     if (!IS_E2E) {

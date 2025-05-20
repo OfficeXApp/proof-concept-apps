@@ -59,10 +59,36 @@ export function RedoMenuItemFactory(accessor: IAccessor): IMenuButtonItem {
 export const SaveFileCommand = {
     id: 'save-file',
     type: CommandType.COMMAND,
-    handler: () => {
+    handler: async (accessor: IAccessor) => {
         console.log('Save file clicked');
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const resourceLoaderService = accessor.get(IResourceLoaderService);
+        // const localFileService = accessor.get(ILocalFileService);
+
+        // Get current workbook/sheet
+        const workbook = univerInstanceService.getCurrentUnitForType<Workbook>(UniverInstanceType.UNIVER_SHEET);
+
+        console.log('workbook', workbook);
+
+        if (!workbook) {
+            return false;
+        }
+
+        // Save snapshot
+        const snapshot = resourceLoaderService.saveUnit(workbook.getUnitId());
+
+        console.log('snapshot', snapshot);
+
+        if (!snapshot) {
+            return false;
+        }
+
+        // Download the file
+        const content = JSON.stringify(snapshot, null, 2);
+
+        console.log('content', content);
         // @ts-ignore
-        window.penpalParent?.logMessage('Save file clicked, propagated in parent');
+        window.penpalParent?.saveFile(content);
     },
 };
 
@@ -104,7 +130,6 @@ export const DownloadFileCommand = {
         }
 
         // Download the file
-        const fileName = `${new Date().toLocaleString()} snapshot.json`;
         const content = JSON.stringify(snapshot, null, 2);
 
         console.log('content', content);
