@@ -45,6 +45,7 @@ import { enUS, faIR, frFR, ruRU, viVN, zhCN, zhTW } from '../locales';
 import { IFRAME_PARENT_URL } from '../main';
 import { UniverSheetsCustomMenuPlugin } from './custom-menu';
 import ImportCSVButtonPlugin from './custom-plugin/import-csv-button';
+import { WorkbookEditablePermission } from '@univerjs/sheets';
 import '@univerjs/sheets/facade';
 import '@univerjs/ui/facade';
 import '@univerjs/docs-ui/facade';
@@ -90,7 +91,7 @@ interface IFileData {
 }
 
 // eslint-disable-next-line max-lines-per-function
-function createNewInstance(fileData?: IFileData) {
+function createNewInstance(fileData?: IFileData, editable = false) {
     // univer
     const univer = new Univer({
         // theme: greenTheme,
@@ -162,8 +163,19 @@ function createNewInstance(fileData?: IFileData) {
     const _workbookData = fileData?.contents?.content ? fileData.contents.content : { ...BLANK_WORKBOOK_DATA_DEMO, id: fileData?.file.id, name: fileData?.file?.name?.replace('.officex-spreadsheet', '') };
 
     // create univer sheet instance
+    let workbook;
     if (!IS_E2E) {
-        univer.createUnit(UniverInstanceType.UNIVER_SHEET, _workbookData);
+        workbook = univer.createUnit(UniverInstanceType.UNIVER_SHEET, _workbookData);
+    } 
+    if (!editable && workbook) {
+        const univerAPI = FUniver.newAPI(univer);
+        const permission = univerAPI.getPermission();
+        const workbookEditablePermission = permission.permissionPointsDefinition.WorkbookEditablePermission;
+        const unitId = workbook.getUnitId();
+        if (unitId) {
+            permission.setWorkbookPermissionPoint(unitId, workbookEditablePermission, false);
+            console.log(`Workbook ${unitId} set to readonly status.`);
+        }
     }
 
     setTimeout(() => {
@@ -215,7 +227,7 @@ const connectPenpal = async () => {
     const fileData = await remote.getFileData();
     console.log('FILE_DATA  = ', fileData);
 
-    createNewInstance(fileData);
+    createNewInstance(fileData, fileData.contents.editable);
     window.createNewInstance = createNewInstance;
 };
 
