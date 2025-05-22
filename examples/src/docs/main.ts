@@ -120,6 +120,8 @@ function createNewInstance(fileData?: IFileData, editable = false) {
     };
     userManagerService.setCurrentUser(mockUser);
     window.univerAPI = FUniver.newAPI(univer);
+
+    window.appTypeFlag = 'document';
 }
 
 const connectPenpal = async () => {
@@ -160,5 +162,6 @@ declare global {
         univerAPI?: ReturnType<typeof FUniver.newAPI>;
         createNewInstance?: typeof createNewInstance;
         penpalParent?: RemoteProxy<Methods>;
+        appTypeFlag?: 'spreadsheet' | 'document'
     }
 }

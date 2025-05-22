@@ -766,7 +766,8 @@ export const SaveFileCommand = {
         const resourceLoaderService = accessor.get(IResourceLoaderService);
 
         const isSheetInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
-        
+        console.log(`isSheetInstance >> `,isSheetInstance)
+
         if (isSheetInstance) {
             // Get current workbook/sheet
             const workbook = univerInstanceService.getCurrentUnitForType<Workbook>(UniverInstanceType.UNIVER_SHEET);
@@ -819,6 +820,8 @@ export const DownloadFileCommand = {
         const resourceLoaderService = accessor.get(IResourceLoaderService);
 
         const isSheetInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+
+        console.log(`window.appTypeFlag`, (window as any).appTypeFlag)
 
         if (isSheetInstance) {
             // Get current workbook/sheet

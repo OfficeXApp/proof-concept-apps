@@ -375,8 +375,13 @@ export const SaveFileCommand = {
         const resourceLoaderService = accessor.get(IResourceLoaderService);
 
         const docInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC);
+        const appTypeFlag = (window as any).appTypeFlag;
+        
+        console.log(`window.appTypeFlag`, (window as any).appTypeFlag)
+        
+        console.log(`docInstance >> `,docInstance)
 
-        if (docInstance) {
+        if (docInstance && appTypeFlag === 'document') {
             // Get current workbook/sheet
             const snapshot = resourceLoaderService.saveUnit(docInstance.getUnitId());
             console.log('snapshot', snapshot);
@@ -404,8 +409,9 @@ export const ShareCommand = {
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const resourceLoaderService = accessor.get(IResourceLoaderService);
         const isDocInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC);
+        const appTypeFlag = (window as any).appTypeFlag;
 
-        if (isDocInstance) {
+        if (isDocInstance && appTypeFlag === 'document') {
             
             // @ts-ignore
             window.penpalParent?.shareFile();
@@ -421,8 +427,10 @@ export const DownloadFileCommand = {
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const resourceLoaderService = accessor.get(IResourceLoaderService);
         const docInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC);
+        const appTypeFlag = (window as any).appTypeFlag;
+        console.log(`window.appTypeFlag`, appTypeFlag)
 
-        if (docInstance) {
+        if (docInstance && appTypeFlag === 'document') {
 
             const snapshot = resourceLoaderService.saveUnit(docInstance.getUnitId());
             console.log('snapshot', snapshot);

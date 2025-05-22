@@ -20,8 +20,8 @@ import { ThemeSwitcherService } from '@univerjs/ui';
 
 import './global.css';
 
-export const LOCAL_DEV = true;
-export const IFRAME_PARENT_URL = LOCAL_DEV ? 'http://localhost:5173' : 'https://drive.officex.app';
+export const LOCAL_DEV_MODE = false;
+export const IFRAME_PARENT_URL = LOCAL_DEV_MODE ? 'http://localhost:5173' : 'https://drive.officex.app';
 
 // package info
 // eslint-disable-next-line node/prefer-global/process

@@ -200,6 +200,7 @@ function createNewInstance(fileData?: IFileData, editable = false) {
 
     window.univer = univer;
     window.univerAPI = FUniver.newAPI(univer);
+    window.appTypeFlag = 'spreadsheet';
 }
 
 const connectPenpal = async () => {
@@ -240,5 +241,6 @@ declare global {
         univerAPI?: ReturnType<typeof FUniver.newAPI>;
         createNewInstance?: typeof createNewInstance;
         penpalParent?: RemoteProxy<Methods>;
+        appTypeFlag?: 'spreadsheet' | 'document'
     }
 }
