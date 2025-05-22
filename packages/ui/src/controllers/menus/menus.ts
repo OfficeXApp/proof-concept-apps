@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { IAccessor } from '@univerjs/core';
+import type { IAccessor, Workbook } from '@univerjs/core';
 import type { IMenuButtonItem } from '../../services/menu/menu';
-import { EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService, IUndoRedoService, RedoCommand, UndoCommand } from '@univerjs/core';
+import { CommandType, EDITOR_ACTIVATED, FOCUSING_FX_BAR_EDITOR, IContextService, IResourceLoaderService, IUndoRedoService, IUniverInstanceService, RedoCommand, UndoCommand, UniverInstanceType } from '@univerjs/core';
 
 import { combineLatest, merge, of } from 'rxjs';
 import { map } from 'rxjs/operators';

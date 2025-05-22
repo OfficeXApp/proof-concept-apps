@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Methods, RemoteProxy } from 'penpal';
 import { LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
 import { FUniver } from '@univerjs/core/facade';
 import { UniverDebuggerPlugin } from '@univerjs/debugger';
@@ -21,7 +22,7 @@ import { UniverDocsPlugin } from '@univerjs/docs';
 import { UniverDocsUIPlugin } from '@univerjs/docs-ui';
 import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
 import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
-import { BLANK_WORKBOOK_DATA_DEMO, DEFAULT_WORKBOOK_DATA_DEMO } from '@univerjs/mockdata';
+import { BLANK_WORKBOOK_DATA_DEMO } from '@univerjs/mockdata';
 import { UniverNetworkPlugin } from '@univerjs/network';
 import { UniverRPCMainThreadPlugin } from '@univerjs/rpc';
 import { UniverSheetsPlugin } from '@univerjs/sheets';
@@ -39,9 +40,12 @@ import { UniverSheetsThreadCommentPlugin } from '@univerjs/sheets-thread-comment
 import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui';
 import { UniverSheetsZenEditorPlugin } from '@univerjs/sheets-zen-editor';
 import { UniverUIPlugin } from '@univerjs/ui';
+import { connect, WindowMessenger } from 'penpal';
 import { enUS, faIR, frFR, ruRU, viVN, zhCN, zhTW } from '../locales';
+import { IFRAME_PARENT_URL } from '../main';
 import { UniverSheetsCustomMenuPlugin } from './custom-menu';
 import ImportCSVButtonPlugin from './custom-plugin/import-csv-button';
+import { WorkbookEditablePermission } from '@univerjs/sheets';
 import '@univerjs/sheets/facade';
 import '@univerjs/ui/facade';
 import '@univerjs/docs-ui/facade';
@@ -79,8 +83,15 @@ export const mockUser = {
     canBindAnonymous: false,
 };
 
+interface IFileData {
+    file?: any;
+    contents?: {
+        content: any;
+    };
+}
+
 // eslint-disable-next-line max-lines-per-function
-function createNewInstance() {
+function createNewInstance(fileData?: IFileData, editable = false) {
     // univer
     const univer = new Univer({
         // theme: greenTheme,
@@ -149,9 +160,22 @@ function createNewInstance() {
     const userManagerService = injector.get(UserManagerService);
     userManagerService.setCurrentUser(mockUser);
 
+    const _workbookData = fileData?.contents?.content ? fileData.contents.content : { ...BLANK_WORKBOOK_DATA_DEMO, id: fileData?.file.id, name: fileData?.file?.name?.replace('.officex-spreadsheet', '') };
+
     // create univer sheet instance
+    let workbook;
     if (!IS_E2E) {
-        univer.createUnit(UniverInstanceType.UNIVER_SHEET, BLANK_WORKBOOK_DATA_DEMO);
+        workbook = univer.createUnit(UniverInstanceType.UNIVER_SHEET, _workbookData);
+    } 
+    if (!editable && workbook) {
+        const univerAPI = FUniver.newAPI(univer);
+        const permission = univerAPI.getPermission();
+        const workbookEditablePermission = permission.permissionPointsDefinition.WorkbookEditablePermission;
+        const unitId = workbook.getUnitId();
+        if (unitId) {
+            permission.setWorkbookPermissionPoint(unitId, workbookEditablePermission, false);
+            console.log(`Workbook ${unitId} set to readonly status.`);
+        }
     }
 
     setTimeout(() => {
@@ -176,10 +200,39 @@ function createNewInstance() {
 
     window.univer = univer;
     window.univerAPI = FUniver.newAPI(univer);
+    window.appTypeFlag = 'spreadsheet';
 }
 
-createNewInstance();
-window.createNewInstance = createNewInstance;
+const connectPenpal = async () => {
+    const messenger = new WindowMessenger({
+        remoteWindow: window.parent,
+        // Defaults to the current origin.
+        allowedOrigins: [IFRAME_PARENT_URL],
+    });
+
+    const connection = connect({
+        messenger,
+        // Methods the iframe window is exposing to the parent window.
+        methods: {
+            checkstatus(logSanityCheck: string) {
+                console.log(`logSanityCheck: ${logSanityCheck}`);
+                return Date.now();
+            },
+        },
+    });
+
+    const remote = await connection.promise;
+    window.penpalParent = remote;
+
+    // @ts-ignore
+    const fileData = await remote.getFileData();
+    console.log('FILE_DATA  = ', fileData);
+
+    createNewInstance(fileData, fileData.contents.editable);
+    window.createNewInstance = createNewInstance;
+};
+
+connectPenpal();
 
 declare global {
     // eslint-disable-next-line ts/naming-convention
@@ -187,5 +240,7 @@ declare global {
         univer?: Univer;
         univerAPI?: ReturnType<typeof FUniver.newAPI>;
         createNewInstance?: typeof createNewInstance;
+        penpalParent?: RemoteProxy<Methods>;
+        appTypeFlag?: 'spreadsheet' | 'document'
     }
 }

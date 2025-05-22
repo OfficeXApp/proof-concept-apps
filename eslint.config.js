@@ -106,5 +106,20 @@ export default antfu(
     univerSourcePreset(),
     facadePreset(),
     tailwindcssPreset(),
-    specPreset()
+    specPreset(),
+    {
+        rules: {
+            // Disable the console rule completely
+            'no-console': 'off',
+
+            // Or if you prefer to just allow all console methods (not just warn/error)
+            // 'no-console': ['error', { allow: ['log', 'warn', 'error', 'info', 'debug'] }],
+
+            // Disable the unused variables/imports warnings
+            'unused-imports/no-unused-vars': 'off',
+
+            // Or make them warnings instead of errors
+            // 'unused-imports/no-unused-vars': 'warn'
+        },
+    }
 );

@@ -20,11 +20,34 @@ import { ToggleShortcutPanelOperation } from '../../commands/operations/toggle-s
 import { RibbonStartGroup } from '../../services/menu/types';
 import { ShortcutPanelMenuItemFactory } from '../shortcut-display/menu';
 import { RedoMenuItemFactory, UndoMenuItemFactory } from './menus';
+// import { DownloadFileMenuItemFactory, SaveFileMenuItemFactory, ShareMenuItemFactory } from './menus';
 
 export const menuSchema: MenuSchemaType = {
+    // [RibbonStartGroup.FILE]: {
+    //     'save-file': {
+    //         order: 0,
+    //         menuItemFactory: SaveFileMenuItemFactory,
+    //     },
+    //     'share': {
+    //         order: 1,
+    //         menuItemFactory: ShareMenuItemFactory,
+    //     },
+    // },
     [RibbonStartGroup.HISTORY]: {
+        // 'save-file': {
+        //     order: 0,
+        //     menuItemFactory: SaveFileMenuItemFactory,
+        // },
+        // download: {
+        //     order: 0,
+        //     menuItemFactory: DownloadFileMenuItemFactory,
+        // },
+        // share: {
+        //     order: 0,
+        //     menuItemFactory: ShareMenuItemFactory,
+        // },
         [UndoCommand.id]: {
-            order: 0,
+            order: 1,
             menuItemFactory: UndoMenuItemFactory,
         },
         [RedoCommand.id]: {

@@ -109,7 +109,7 @@ import { CELL_POPUP_COMPONENT_KEY } from '../views/cell-popup/config';
 import { DEFINED_NAME_CONTAINER } from '../views/defined-name/component-name';
 import { DefinedNameContainer } from '../views/defined-name/DefinedNameContainer';
 import { RenderSheetContent, RenderSheetFooter, RenderSheetHeader } from '../views/sheet-container/SheetContainer';
-import { menuSchema } from './menu.schema';
+import { DownloadFileCommand, menuSchema, SaveFileCommand, ShareCommand } from './menu.schema';
 import {
     EditorBreakLineShortcut,
     EditorCursorCtrlEnterShortcut,
@@ -187,6 +187,14 @@ export class SheetUIController extends Disposable {
         this._initShortcuts();
         this._initWorkbenchParts();
         this._initFocusHandler();
+        this._registerSaveShare()
+    }
+
+
+    private _registerSaveShare(): void {
+        this.disposeWithMe(this._commandService.registerMultipleCommand(SaveFileCommand));
+        this.disposeWithMe(this._commandService.registerMultipleCommand(ShareCommand));
+        this.disposeWithMe(this._commandService.registerMultipleCommand(DownloadFileCommand));
     }
 
     private _initComponents(): void {

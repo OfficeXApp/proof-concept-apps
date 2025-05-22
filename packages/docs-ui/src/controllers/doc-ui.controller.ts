@@ -58,7 +58,7 @@ import {
 import { DocFooter } from '../views/doc-footer';
 import { PAGE_SETTING_COMPONENT_ID, PageSettings } from '../views/page-settings';
 import { DocSideMenu } from '../views/side-menu';
-import { menuSchema } from './menu.schema';
+import { DownloadFileCommand, menuSchema, SaveFileCommand, ShareCommand } from './menu.schema';
 
 export class DocUIController extends Disposable {
     constructor(
@@ -129,6 +129,14 @@ export class DocUIController extends Disposable {
         this._initCommands();
         this._initUiParts();
         this._initShortCut();
+        this._registerSaveShare();
+    }
+
+
+    private _registerSaveShare(): void {
+        this.disposeWithMe(this._commandService.registerMultipleCommand(SaveFileCommand));
+        this.disposeWithMe(this._commandService.registerMultipleCommand(ShareCommand));
+        this.disposeWithMe(this._commandService.registerMultipleCommand(DownloadFileCommand));
     }
 
     private _initCommands(): void {
