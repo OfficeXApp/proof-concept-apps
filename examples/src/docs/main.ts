@@ -15,7 +15,7 @@
  */
 
 import type { Methods, RemoteProxy } from 'penpal';
-import { LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
+import { DocumentDataModel, LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
 import { FUniver } from '@univerjs/core/facade';
 import { UniverDebuggerPlugin } from '@univerjs/debugger';
 import { UniverDocsPlugin } from '@univerjs/docs';
@@ -95,6 +95,10 @@ function createNewInstance(fileData?: IFileData, editable = false) {
 
     if (!IS_E2E) {
         workbook = univer.createUnit(UniverInstanceType.UNIVER_DOC, _workbookData);
+    }
+
+    if (!editable && workbook) {
+        (workbook as DocumentDataModel).setDisabled(true);
     }
 
     univer.registerPlugin(UniverDebuggerPlugin, {

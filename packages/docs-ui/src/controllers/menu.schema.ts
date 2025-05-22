@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { MenuSchemaType } from '@univerjs/ui';
-import { ContextMenuGroup, ContextMenuPosition, RibbonStartGroup } from '@univerjs/ui';
+import type { IMenuButtonItem, MenuSchemaType } from '@univerjs/ui';
+import { ContextMenuGroup, ContextMenuPosition, MenuItemType, RibbonStartGroup } from '@univerjs/ui';
 import { DocCopyCommand, DocCopyCurrentParagraphCommand, DocCutCommand, DocCutCurrentParagraphCommand, DocPasteCommand } from '../commands/commands/clipboard.command';
 import { DeleteCurrentParagraphCommand, DeleteLeftCommand } from '../commands/commands/doc-delete.command';
 import { OpenHeaderFooterPanelCommand } from '../commands/commands/doc-header-footer.command';
@@ -78,8 +78,49 @@ import {
     UnderlineMenuItemFactory,
 } from './menu/menu';
 import { CopyCurrentParagraphMenuItemFactory, CutCurrentParagraphMenuItemFactory, DeleteCurrentParagraphMenuItemFactory, DocInsertBellowMenuItemFactory, H1HeadingMenuItemFactory, H2HeadingMenuItemFactory, H3HeadingMenuItemFactory, H4HeadingMenuItemFactory, H5HeadingMenuItemFactory, INSERT_BELLOW_MENU_ID, InsertBulletListBellowMenuItemFactory, InsertCheckListBellowMenuItemFactory, InsertHorizontalLineBellowMenuItemFactory, InsertOrderListBellowMenuItemFactory, NormalTextHeadingMenuItemFactory } from './menu/paragraph-menu';
+import { CommandType, IAccessor, IResourceLoaderService, IUniverInstanceService, UniverInstanceType } from '@univerjs/core';
+ 
+
+export const SaveFileMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
+    id: 'save-file',
+    type: MenuItemType.BUTTON,
+    title: 'Save',
+    tooltip: 'Save File',
+    commandId: SaveFileCommand.id,
+});
+
+export const ShareMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
+    id: 'share',
+    type: MenuItemType.BUTTON,
+    title: 'Share',
+    tooltip: 'Share',
+    commandId: ShareCommand.id,
+});
+
+export const DownloadFileMenuItemFactory = (accessor: IAccessor): IMenuButtonItem => ({
+    id: 'download-file',
+    type: MenuItemType.BUTTON,
+    title: 'Download',
+    tooltip: 'Download File',
+    commandId: DownloadFileCommand.id,
+});
+
 
 export const menuSchema: MenuSchemaType = {
+    [RibbonStartGroup.HISTORY]: {
+        'save-file': {
+            order: 0,
+            menuItemFactory: SaveFileMenuItemFactory,
+        },
+        download: {
+            order: 0,
+            menuItemFactory: DownloadFileMenuItemFactory,
+        },
+        share: {
+            order: 0,
+            menuItemFactory: ShareMenuItemFactory,
+        },
+    },
     [RibbonStartGroup.FORMAT]: {
         [SetInlineFormatBoldCommand.id]: {
             order: 0,
@@ -321,5 +362,89 @@ export const menuSchema: MenuSchemaType = {
                 },
             },
         },
+    },
+};
+
+
+export const SaveFileCommand = {
+    id: 'save-file', 
+    type: CommandType.COMMAND,
+    handler: async (accessor: IAccessor) => {
+        console.log('Save file clicked as Documents');
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const resourceLoaderService = accessor.get(IResourceLoaderService);
+
+        const docInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC);
+
+        if (docInstance) {
+            // Get current workbook/sheet
+            const snapshot = resourceLoaderService.saveUnit(docInstance.getUnitId());
+            console.log('snapshot', snapshot);
+    
+            if (!snapshot) {
+                return false;
+            }
+    
+            // Download the file
+            const content = JSON.stringify(snapshot, null, 2);
+    
+            console.log('content', content);
+            // @ts-ignore
+            window.penpalParent?.saveFile(content);
+        }
+    },
+};
+
+export const ShareCommand = {
+    id: 'share',
+    type: CommandType.COMMAND,
+    handler: (accessor: IAccessor) => {
+        console.log('Share clicked as Documents');
+
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const resourceLoaderService = accessor.get(IResourceLoaderService);
+        const isDocInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC);
+
+        if (isDocInstance) {
+            
+            // @ts-ignore
+            window.penpalParent?.shareFile();
+        }
+    },
+};
+
+export const DownloadFileCommand = {
+    id: 'download-file',
+    type: CommandType.COMMAND,
+    handler: async (accessor: IAccessor) => {
+        console.log('Download file clicked as Documents');
+        const univerInstanceService = accessor.get(IUniverInstanceService);
+        const resourceLoaderService = accessor.get(IResourceLoaderService);
+        const docInstance = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC);
+
+        if (docInstance) {
+
+            const snapshot = resourceLoaderService.saveUnit(docInstance.getUnitId());
+            console.log('snapshot', snapshot);
+    
+            if (!snapshot) {
+                return false;
+            }
+
+            console.log('snapshot', snapshot);
+
+            if (!snapshot) {
+                return false;
+            }
+
+            // Download the file
+            const content = JSON.stringify(snapshot, null, 2);
+
+            // @ts-ignore
+            window.penpalParent?.downloadFile(content);
+
+            return true;
+        }
+
     },
 };
