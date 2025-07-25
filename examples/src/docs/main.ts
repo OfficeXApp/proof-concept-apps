@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import type { DocumentDataModel } from '@univerjs/core';
 import type { Methods, RemoteProxy } from 'penpal';
-import { DocumentDataModel, LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
+import { LocaleType, LogLevel, Univer, UniverInstanceType, UserManagerService } from '@univerjs/core';
 import { FUniver } from '@univerjs/core/facade';
 import { UniverDebuggerPlugin } from '@univerjs/debugger';
 import { UniverDocsPlugin } from '@univerjs/docs';
@@ -32,14 +33,11 @@ import { UniverUIPlugin } from '@univerjs/ui';
 import { connect, WindowMessenger } from 'penpal';
 
 import { enUS, faIR, ruRU, zhCN } from '../locales';
-import { IFRAME_PARENT_URL } from '../main';
+import { ALLOWED_ORIGINS } from '../main';
 import '../global.css';
-
 
 /* eslint-disable node/prefer-global/process */
 const IS_E2E: boolean = !!process.env.IS_E2E;
-
-
 
 interface IFileData {
     file?: any;
@@ -47,7 +45,6 @@ interface IFileData {
         content: any;
     };
 }
-
 
 function createNewInstance(fileData?: IFileData, editable = false) {
     // univer
@@ -105,7 +102,7 @@ function createNewInstance(fileData?: IFileData, editable = false) {
         performanceMonitor: {
             enabled: false,
         },
-    }); 
+    });
 
     window.univer = univer;
     const injector = univer.__getInjector();
@@ -128,7 +125,7 @@ const connectPenpal = async () => {
     const messenger = new WindowMessenger({
         remoteWindow: window.parent,
         // Defaults to the current origin.
-        allowedOrigins: [IFRAME_PARENT_URL],
+        allowedOrigins: ALLOWED_ORIGINS,
     });
 
     const connection = connect({
@@ -162,6 +159,6 @@ declare global {
         univerAPI?: ReturnType<typeof FUniver.newAPI>;
         createNewInstance?: typeof createNewInstance;
         penpalParent?: RemoteProxy<Methods>;
-        appTypeFlag?: 'spreadsheet' | 'document'
+        appTypeFlag?: 'spreadsheet' | 'document';
     }
 }

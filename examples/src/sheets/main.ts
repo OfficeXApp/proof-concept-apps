@@ -42,10 +42,9 @@ import { UniverSheetsZenEditorPlugin } from '@univerjs/sheets-zen-editor';
 import { UniverUIPlugin } from '@univerjs/ui';
 import { connect, WindowMessenger } from 'penpal';
 import { enUS, faIR, frFR, ruRU, viVN, zhCN, zhTW } from '../locales';
-import { IFRAME_PARENT_URL } from '../main';
+import { ALLOWED_ORIGINS } from '../main';
 import { UniverSheetsCustomMenuPlugin } from './custom-menu';
 import ImportCSVButtonPlugin from './custom-plugin/import-csv-button';
-import { WorkbookEditablePermission } from '@univerjs/sheets';
 import '@univerjs/sheets/facade';
 import '@univerjs/ui/facade';
 import '@univerjs/docs-ui/facade';
@@ -166,7 +165,7 @@ function createNewInstance(fileData?: IFileData, editable = false) {
     let workbook;
     if (!IS_E2E) {
         workbook = univer.createUnit(UniverInstanceType.UNIVER_SHEET, _workbookData);
-    } 
+    }
     if (!editable && workbook) {
         const univerAPI = FUniver.newAPI(univer);
         const permission = univerAPI.getPermission();
@@ -207,7 +206,7 @@ const connectPenpal = async () => {
     const messenger = new WindowMessenger({
         remoteWindow: window.parent,
         // Defaults to the current origin.
-        allowedOrigins: [IFRAME_PARENT_URL],
+        allowedOrigins: ALLOWED_ORIGINS,
     });
 
     const connection = connect({
@@ -241,6 +240,6 @@ declare global {
         univerAPI?: ReturnType<typeof FUniver.newAPI>;
         createNewInstance?: typeof createNewInstance;
         penpalParent?: RemoteProxy<Methods>;
-        appTypeFlag?: 'spreadsheet' | 'document'
+        appTypeFlag?: 'spreadsheet' | 'document';
     }
 }
