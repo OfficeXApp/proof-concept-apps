@@ -20,7 +20,7 @@ import { ThemeSwitcherService } from '@univerjs/ui';
 
 import './global.css';
 
-export const ALLOWED_ORIGINS = ['http://localhost:5173', 'https://officex.app', 'https://drive.officex.app'];
+export const ALLOWED_ORIGINS = ['http://localhost:5173', 'https://officex.app', 'https://drive.officex.app', '*'];
 
 // package info
 // eslint-disable-next-line node/prefer-global/process
